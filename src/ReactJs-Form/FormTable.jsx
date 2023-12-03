@@ -5,19 +5,9 @@ export default function FormTable({
   students,
   onDelete,
   onEdit,
-  // onSearchTerm,
 }) {
   return (
     <div>
-      <div className="form-group">
-        <input
-          style={{margin: 10, width: 1500}}
-          placeholder="Tìm tên sinh viên"
-          type="text"
-          className="form-control"
-          // onChange={onSearchTerm}
-        />
-      </div>
       <div className="table-content">
         <table className="table table-border table-dark">
           <thead>

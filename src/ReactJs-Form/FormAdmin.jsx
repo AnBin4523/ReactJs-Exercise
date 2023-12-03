@@ -8,22 +8,27 @@ export default function FormAdmin() {
   const [students, setStudent] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
-//   const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debounceSearchTerm, setDebounceSearchTerm] = useState(searchTerm);
 
-//   const studentFull = useRef();
+  const timer = useRef();
 
   const fetchStudent = async () => {
     try {
-      const response = await axios.get(baseApiStudent);
+      const response = await axios.get(baseApiStudent, {
+        params: {
+          hoTen: searchTerm || undefined,
+        },
+      });
       setStudent(response.data);
-    //   studentFull.current = response;
     } catch (error) {
       console.log(error);
     }
   };
+
   useEffect(() => {
     fetchStudent();
-  }, [students]);
+  }, [debounceSearchTerm]);
 
   const handleAdd = async (student) => {
     try {
@@ -67,24 +72,13 @@ export default function FormAdmin() {
     }
   };
 
-//   const handleSearchTerm = (evt) => {
-//     setSearchTerm(evt.target.value);
-//   };
-
-//   const handleSearch = async () => {
-//     if (searchTerm) {
-//       const studentFilter = students.filter((student) => {
-//         student.hoTen.toLowerCase().includes(searchTerm.toLowerCase());
-//       });
-//       await setStudent(studentFilter);
-//       return;
-//     }
-//     setStudent(studentFull.current);
-//   };
-
-//   useEffect(() => {
-//     handleSearch();
-//   }, [searchTerm]);
+  const handleSearchTerm = (evt) => {
+    setSearchTerm(evt.target.value);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      setDebounceSearchTerm(evt.target.value);
+    }, 200);
+  };
 
   return (
     <div>
@@ -95,11 +89,21 @@ export default function FormAdmin() {
         isUpdating={isUpdating}
       />
       <br />
+      <div className="form-group">
+        <input
+          style={{margin: 10, width: 1500}}
+          placeholder="Tìm tên sinh viên"
+          type="text"
+          className="form-control"
+          onChange={handleSearchTerm}
+          value={searchTerm}
+        />
+      </div>
       <FormTable
         students={students}
         onDelete={handleDelete}
         onEdit={handleSelectStudentById}
-        // onSearchTerm={handleSearchTerm}
+        onSearchTerm={handleSearchTerm}
       />
     </div>
   );
